@@ -14,7 +14,9 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_DATABASE: laravel_devops
-          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: root
+          MYSQL_PASSWORD: "User@1234"
+          MYSQL_ROOT_PASSWORD: "User@1234"
         options: >-
           --health-cmd="mysqladmin ping --silent"
           --health-interval=10s
@@ -40,11 +42,14 @@ jobs:
         cp .env.example .env
         php artisan key:generate
         echo "DB_CONNECTION=mysql" >> .env
-        echo "DB_HOST=127.0.0.1" >> .env
+        echo "DB_HOST=mysql" >> .env
         echo "DB_PORT=3306" >> .env
         echo "DB_DATABASE=laravel_devops" >> .env
         echo "DB_USERNAME=root" >> .env
         echo "DB_PASSWORD=User@1234" >> .env
+
+    - name: Test MySQL Connection
+      run: mysql -u root -pUser@1234 -h mysql -e "SHOW DATABASES;"
 
     - name: Run Migrations
       run: php artisan migrate --force
